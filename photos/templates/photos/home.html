@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block section %}
+
+    <h1>Bienvenido a Portrait</h1>
+    <p>Tu red social de fotos</p>
+
+    {% if photos_list|length > 0 %}
+        <h2>Últimas fotos publicadas</h2>
+        {% include 'photos/photos_loop.html' %}
+    {% else %}
+        ¡Se el primero en publicar una foto!
+    {% endif %}
+
+{% endblock %}
