@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
@@ -35,14 +36,19 @@ class UserSerializer(serializers.Serializer):
         instance.save()  # guardar en bd
         return instance
 
-    def validate_username(selfself,data):
+    def validate_username(self, data):
         """
         Valida si existe un usuario con ese username
         :param data:
         :return:
         """
         users = User.objects.filter(username=data)
-        if len(users) != 0:
+        #si estoy creando (no hay instancia) comprobar si hay usuarios con ese username
+        if not self.instance and len(users) != 0:
+            raise serializers.ValidationError("Ya existe un usuario con ese username")
+        #si estoy actualizando, el nuevo username es diferente al de la instancia (está cambiando el username)
+        #y existen usuarios ya registrados con el nuevo username
+        elif self.instance and self.instance.username!=data and len(users) != 0:
             raise serializers.ValidationError("Ya existe un usuario con ese username")
         else:
             return data
