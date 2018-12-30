@@ -63,3 +63,14 @@ class UserDetailAPI(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        """
+        Borra un usuario de la bd
+        :param request:
+        :param pk:
+        :return:
+        """
+        user = get_object_or_404(User, pk=pk)  # si el usuario existe me lo devuelve y sino me devuelve un 404
+        user.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
