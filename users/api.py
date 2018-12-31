@@ -9,6 +9,7 @@ from rest_framework.viewsets import ViewSet
 
 class UserViewSet(ViewSet):
 
+
     permission_classes = (UserPermission,)
 
     def list(self, request):
