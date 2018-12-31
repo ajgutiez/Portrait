@@ -4,8 +4,10 @@ from photos.models import Photo
 from photos.serializers import PhotoSerializer, PhotoListSerializer
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
+from photos.views import PhotosQueryset
 
-class PhotoListAPI(ListCreateAPIView):
+
+class PhotoListAPI(PhotosQueryset, ListCreateAPIView):
     """
     Lista y crea las fotos (get y post)
     """
@@ -16,10 +18,16 @@ class PhotoListAPI(ListCreateAPIView):
     def get_serializer_class(self):
         return PhotoSerializer if self.request.method == "POST" else PhotoListSerializer
 
-class PhotoDetailAPI(RetrieveUpdateDestroyAPIView):
+    def get_queryset(self):
+        return self.get_photos_queryset(self.request)
+
+class PhotoDetailAPI(PhotosQueryset, RetrieveUpdateDestroyAPIView):
     """
     Detalle, actualización y borrado de fotos (get, put y delete)
     """
     queryset = Photo.objects.all()
     serializer_class = PhotoSerializer
     permission_classes = (IsAuthenticatedOrReadOnly,)
+
+    def get_queryset(self):
+        return self.get_photos_queryset(self.request)
