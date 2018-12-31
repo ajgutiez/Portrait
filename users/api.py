@@ -5,9 +5,11 @@ from django.shortcuts import get_object_or_404
 from users.serializers import UserSerializer
 from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
-
+from users.permissions import UserPermission
 
 class UserListAPI(APIView):
+
+    permission_classes = (UserPermission,)
 
     def get(self, request):
         """
@@ -15,6 +17,7 @@ class UserListAPI(APIView):
         :param request:
         :return:
         """
+        self.check_permissions(request)
         #instancia del paginador
         paginator = PageNumberPagination()
         users = User.objects.get_queryset().order_by('id')
@@ -30,6 +33,7 @@ class UserListAPI(APIView):
         :param request:
         :return:
         """
+        self.check_permissions(request)
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
             new_user = serializer.save()
@@ -40,6 +44,8 @@ class UserListAPI(APIView):
 
 class UserDetailAPI(APIView):
 
+    permission_classes = (UserPermission,)
+
     def get(self, request, pk):
         """
         Devuelve el usuario dado su id
@@ -47,7 +53,9 @@ class UserDetailAPI(APIView):
         :param pk:
         :return:
         """
+        self.check_permissions(request)
         user = get_object_or_404(User, pk=pk) #si el usuario existe me lo devuelve y sino me devuelve un 404
+        self.check_object_permissions(request, user)
         serializer = UserSerializer(user)
         return Response(serializer.data)
 
@@ -58,7 +66,9 @@ class UserDetailAPI(APIView):
         :param pk:
         :return:
         """
+        self.check_permissions(request)
         user = get_object_or_404(User, pk=pk)  # si el usuario existe me lo devuelve y sino me devuelve un 404
+        self.check_object_permissions(request, user)
         serializer = UserSerializer(instance=user, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -73,6 +83,8 @@ class UserDetailAPI(APIView):
         :param pk:
         :return:
         """
+        self.check_permissions(request)
         user = get_object_or_404(User, pk=pk)  # si el usuario existe me lo devuelve y sino me devuelve un 404
+        self.check_object_permissions(request, user)
         user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
