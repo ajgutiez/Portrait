@@ -154,3 +154,9 @@ LICENSES = (
 # Badwords http://goo.gl/G2nCu7
 PROJECT_BADWORDS = [u'Abollao', u'Abrazafarolas', u'Analfabestia', u'Caracartón']
 
+#Rest framework settings
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS' : 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE' : 3
+}
+
