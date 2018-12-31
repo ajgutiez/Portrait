@@ -1,17 +1,17 @@
 from django.contrib.auth.models import User
 from rest_framework.response import Response
-from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 from users.serializers import UserSerializer
 from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
 from users.permissions import UserPermission
+from rest_framework.viewsets import ViewSet
 
-class UserListAPI(APIView):
+class UserViewSet(ViewSet):
 
     permission_classes = (UserPermission,)
 
-    def get(self, request):
+    def list(self, request):
         """
         Obtiene el listado de usuarios
         :param request:
@@ -27,7 +27,7 @@ class UserListAPI(APIView):
         #devolver respuesta paginada
         return paginator.get_paginated_response(serializer.data)
 
-    def post(self, request):
+    def create(self, request):
         """
         Crea un nuevo usuario
         :param request:
@@ -41,12 +41,7 @@ class UserListAPI(APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
-class UserDetailAPI(APIView):
-
-    permission_classes = (UserPermission,)
-
-    def get(self, request, pk):
+    def retrieve(self, request, pk):
         """
         Devuelve el usuario dado su id
         :param request:
@@ -59,7 +54,7 @@ class UserDetailAPI(APIView):
         serializer = UserSerializer(user)
         return Response(serializer.data)
 
-    def put(self, request, pk):
+    def update(self, request, pk):
         """
         Actualiza usuario con los datos
         :param request:
@@ -76,7 +71,7 @@ class UserDetailAPI(APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request, pk):
+    def destroy(self, request, pk):
         """
         Borra un usuario de la bd
         :param request:
