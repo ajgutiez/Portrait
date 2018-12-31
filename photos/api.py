@@ -21,6 +21,15 @@ class PhotoListAPI(PhotosQueryset, ListCreateAPIView):
     def get_queryset(self):
         return self.get_photos_queryset(self.request)
 
+    def perform_create(self, serializer):
+        """
+        Esta función es llamada antes de la llamada al serializer.save().
+        Cada vez que guarda el objeto le asignará el propietario autenticado
+        :param serializer:
+        :return:
+        """
+        serializer.save(owner=self.request.user)
+
 class PhotoDetailAPI(PhotosQueryset, RetrieveUpdateDestroyAPIView):
     """
     Detalle, actualización y borrado de fotos (get, put y delete)
