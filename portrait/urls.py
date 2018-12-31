@@ -17,15 +17,20 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 from django.contrib.auth.decorators import login_required
-
-import users
-from photos.api import PhotoListAPI, PhotoDetailAPI
+from rest_framework.routers import DefaultRouter
+from django.conf.urls import include
+from photos.api import PhotoViewSet
 from photos.views import HomeView, DetailView, CreateView, PhotoListView, UserPhotosView
 from users.api import UserListAPI, UserDetailAPI
 from users.views import LoginView, LogoutView
 
+
+#APIRouter
+router = DefaultRouter()
+router.register(r'api/1.0/photos', PhotoViewSet)
+
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
+    url(r'^admin/', include(admin.site.urls)),
 
     #Photo urls
     url(r'^$', HomeView.as_view(), name='photos_home'),
@@ -35,8 +40,9 @@ urlpatterns = [
     url(r'^photos/new$', CreateView.as_view(), name='create_photo'),
 
     #Photos API Urls
-    url(r'^api/1.0/photos/$', PhotoListAPI.as_view(), name='photo_list_api'),
-    url(r'^api/1.0/photos/(?P<pk>[0-9]+)$', PhotoDetailAPI.as_view(), name='photo_detail_api'),
+    #url(r'^api/1.0/photos/$', PhotoListAPI.as_view(), name='photo_list_api'),
+    #url(r'^api/1.0/photos/(?P<pk>[0-9]+)$', PhotoDetailAPI.as_view(), name='photo_detail_api'),
+    url(r'', include(router.urls)),  #incluyo las URLS de API
 
     #Users urls
     url(r'^login$', LoginView.as_view(), name='users_login'),

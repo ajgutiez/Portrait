@@ -1,42 +1,29 @@
 # -*- coding: utf-8 -*-
-from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.viewsets import ModelViewSet
+
 from photos.models import Photo
 from photos.serializers import PhotoSerializer, PhotoListSerializer
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
-
 from photos.views import PhotosQueryset
 
-
-class PhotoListAPI(PhotosQueryset, ListCreateAPIView):
+class PhotoViewSet(PhotosQueryset, ModelViewSet):
     """
-    Lista y crea las fotos (get y post)
+    Este Viewset hace los mismo que las clases PhotoListAPI y PhotoDetailAPI pero en una sola clase
     """
     queryset = Photo.objects.all()
-    serializer_class = PhotoListSerializer
     permission_classes = (IsAuthenticatedOrReadOnly,)
-
-    def get_serializer_class(self):
-        return PhotoSerializer if self.request.method == "POST" else PhotoListSerializer
 
     def get_queryset(self):
         return self.get_photos_queryset(self.request)
+
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return PhotoListSerializer
+        else:
+            return PhotoSerializer
 
     def perform_create(self, serializer):
         """
-        Esta función es llamada antes de la llamada al serializer.save().
-        Cada vez que guarda el objeto le asignará el propietario autenticado
-        :param serializer:
-        :return:
+        Asigna automáticamente la autoría de la nueva foto al usuario autenticado
         """
         serializer.save(owner=self.request.user)
-
-class PhotoDetailAPI(PhotosQueryset, RetrieveUpdateDestroyAPIView):
-    """
-    Detalle, actualización y borrado de fotos (get, put y delete)
-    """
-    queryset = Photo.objects.all()
-    serializer_class = PhotoSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly,)
-
-    def get_queryset(self):
-        return self.get_photos_queryset(self.request)
